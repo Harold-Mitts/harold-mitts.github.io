@@ -512,8 +512,10 @@
                 <!-- Conversation Mode Controls -->
                 <div id="conversationControls" class="hidden">
                     <div class="voice-group">
-                        <h3><span class="voice-indicator voice-a-indicator"></span> <span id="speakerALabel">Voice A</span></h3>
-                        <input type="text" id="speakerAName" class="speaker-name-input" placeholder="Speaker name (letters only, max 14)" maxlength="14" value="A">
+                        <h3><span class="voice-indicator voice-a-indicator"></span> <span id="speakerALabel">Voice
+                                A</span></h3>
+                        <input type="text" id="speakerAName" class="speaker-name-input"
+                            placeholder="Speaker name (letters only, max 14)" maxlength="14" value="A">
                         <div class="speaker-name-hint">Letters only, max 14 characters</div>
                         <select id="voiceSelectA">
                             <option>Loading voices...</option>
@@ -521,8 +523,10 @@
                     </div>
 
                     <div class="voice-group">
-                        <h3><span class="voice-indicator voice-b-indicator"></span> <span id="speakerBLabel">Voice B</span></h3>
-                        <input type="text" id="speakerBName" class="speaker-name-input" placeholder="Speaker name (letters only, max 14)" maxlength="14" value="B">
+                        <h3><span class="voice-indicator voice-b-indicator"></span> <span id="speakerBLabel">Voice
+                                B</span></h3>
+                        <input type="text" id="speakerBName" class="speaker-name-input"
+                            placeholder="Speaker name (letters only, max 14)" maxlength="14" value="B">
                         <div class="speaker-name-hint">Letters only, max 14 characters</div>
                         <select id="voiceSelectB">
                             <option>Loading voices...</option>
@@ -866,15 +870,15 @@
             validateSpeakerName(event, speaker) {
                 // Strip all non-letter characters
                 let value = event.target.value.replace(/[^a-zA-Z]/g, '');
-                
+
                 // Enforce max 14 characters
                 if (value.length > 14) {
                     value = value.substring(0, 14);
                 }
-                
+
                 // Update input value
                 event.target.value = value;
-                
+
                 // Update stored name and label (default to A or B if empty)
                 if (speaker === 'A') {
                     this.speakerAName = value || 'A';
@@ -1058,7 +1062,7 @@
             parseDialog(text) {
                 const lines = text.split('\n').filter(line => line.trim().length > 0);
                 const dialogParts = [];
-                
+
                 // Create regex patterns for custom speaker names (case-insensitive)
                 const nameA = this.speakerAName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
                 const nameB = this.speakerBName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
