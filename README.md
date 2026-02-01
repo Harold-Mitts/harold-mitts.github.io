@@ -28,6 +28,8 @@
 
 **[Missile Command](https://harold-mitts.github.io/missile-command/)** - Classic arcade defense game with modern features: 3 difficulty modes, cluster missiles, progressive difficulty scaling, and procedural sound effects. Pure vanilla JavaScript with HTML5 Canvas.
 
+**[Word Cloud Generator](https://harold-mitts.github.io/word-cloud/)** - Interactive word cloud visualizer with two modes: automatic text analysis and manual JSON weighting. Supports custom color schemes and PNG export. Built with wordcloud2.js.
+
 ---
 
 📫 **Connect**: [LinkedIn](https://www.linkedin.com/in/hmitts) - Building Copilot solutions that deliver real outcomes. Let's collaborate.
