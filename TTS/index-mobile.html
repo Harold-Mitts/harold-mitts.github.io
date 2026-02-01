@@ -646,7 +646,7 @@
 
             showVoiceLoadPrompt() {
                 this.voiceAlert.classList.add('show', 'warning');
-                this.voiceAlertText.textContent = '⚠️ Tap "Load Voices" to enable speech';
+                this.voiceAlertText.textContent = '⚠️ Voice picker unavailable, but speech still works';
             }
 
             showVoiceSuccess() {
@@ -850,14 +850,6 @@
                     return;
                 }
 
-                // Check if voices are loaded
-                if (!this.voicesLoaded || this.voices.length === 0) {
-                    this.voiceAlert.classList.add('show', 'warning');
-                    this.voiceAlertText.textContent = '⚠️ Please load voices first';
-                    this.manualLoadVoices();
-                    return;
-                }
-
                 // If paused, resume
                 if (this.isPaused) {
                     this.synth.resume();
@@ -947,10 +939,12 @@
                 const chunk = this.textChunks[this.currentChunkIndex];
                 const utterance = new SpeechSynthesisUtterance(chunk);
 
+                // Use selected voice if available, otherwise browser will use default
                 const voiceIndex = parseInt(this.voiceSelectSingle.value);
-                if (this.voices[voiceIndex]) {
+                if (this.voices.length > 0 && this.voices[voiceIndex]) {
                     utterance.voice = this.voices[voiceIndex];
                 }
+                // Browser will use default voice if none specified
 
                 utterance.rate = parseFloat(this.rateSlider.value);
                 utterance.pitch = parseFloat(this.pitchSlider.value);
@@ -1032,13 +1026,15 @@
                 const part = this.dialogParts[this.currentPartIndex];
                 const utterance = new SpeechSynthesisUtterance(part.text);
 
+                // Use selected voice if available, otherwise browser will use default
                 const voiceIndex = part.speaker === 'A'
                     ? parseInt(this.voiceSelectA.value)
                     : parseInt(this.voiceSelectB.value);
 
-                if (this.voices[voiceIndex]) {
+                if (this.voices.length > 0 && this.voices[voiceIndex]) {
                     utterance.voice = this.voices[voiceIndex];
                 }
+                // Browser will use default voice if none specified
 
                 utterance.rate = parseFloat(this.rateSliderConv.value);
                 utterance.pitch = parseFloat(this.pitchSliderConv.value);
