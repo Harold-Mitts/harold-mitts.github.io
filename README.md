@@ -20,6 +20,14 @@
 🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩 100% Automation Instinct
 ```
 
+---
+
+## 🚀 Projects
+
+**[TTS Multi-Mode Reader](https://harold-mitts.github.io/TTS/)** - Web-based text-to-speech with single voice and conversation modes using Web Speech API. Best on desktop browsers. MIT licensed - fork and improve if you'd like to add mobile support.
+
+---
+
 📫 **Let's Connect**: If you're wrestling with Copilot deployment, extensibility challenges, or turning executive vision into technical reality - [reach me on LinkedIn](https://linkedin.com/in/harold-mitts). I'm here to help.
 
 <sub>All views expressed are my own.</sub>
