@@ -28,6 +28,6 @@
 
 ---
 
-📫 **Let's Connect**: If you're wrestling with Copilot deployment, extensibility challenges, or turning executive vision into technical reality - [reach me on LinkedIn](https://linkedin.com/in/harold-mitts). I'm here to help.
+📫 **Connect**: [LinkedIn](https://www.linkedin.com/in/hmitts) - Building Copilot solutions that deliver real outcomes. Let's collaborate.
 
 <sub>All views expressed are my own.</sub>
