@@ -4,7 +4,7 @@ A modern web application for text-to-speech using the Web Speech API with dual o
 
 ## 🚀 Try it Live
 
-**[Launch TTS Multi-Mode →](https://harold-mitts.github.io/Harold-Mitts/TTS/tts-reader.html)**
+**[Launch TTS Multi-Mode →](https://harold-mitts.github.io/TTS/)**
 
 No installation required - runs directly in your browser.
 
