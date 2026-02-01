@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -33,7 +34,7 @@
         h1 {
             font-size: 48px;
             margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .subtitle {
@@ -58,7 +59,7 @@
             background: white;
             border-radius: 12px;
             padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
 
         .panel h2 {
@@ -137,7 +138,9 @@
             color: #555;
         }
 
-        select, input[type="number"], input[type="color"] {
+        select,
+        input[type="number"],
+        input[type="color"] {
             width: 100%;
             padding: 8px;
             border: 2px solid #e0e0e0;
@@ -264,6 +267,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <header>
@@ -275,7 +279,7 @@
             <!-- Left Panel: Controls -->
             <div class="panel">
                 <h2>Input</h2>
-                
+
                 <div class="mode-selector">
                     <button class="mode-btn active" onclick="switchMode('text')">Text Analysis</button>
                     <button class="mode-btn" onclick="switchMode('json')">JSON Weights</button>
@@ -286,7 +290,8 @@
                     <div class="info-box">
                         Paste any text and we'll automatically analyze word frequency. Common words are filtered out.
                     </div>
-                    <textarea id="textInput" placeholder="Paste your text here...
+                    <textarea id="textInput"
+                        placeholder="Paste your text here...
 
 Example: Paste a blog post, article, transcript, or any text you want to visualize. Words will be sized based on how frequently they appear."></textarea>
                 </div>
@@ -296,7 +301,8 @@ Example: Paste a blog post, article, transcript, or any text you want to visuali
                     <div class="info-box">
                         Manually specify words and their weights. Higher weights = larger words.
                     </div>
-                    <textarea id="jsonInput" placeholder='Enter JSON format...'>{"innovation": 10, "customer": 8, "growth": 7, "engagement": 6, "success": 6, "collaboration": 5, "technology": 5, "strategy": 4, "leadership": 4, "excellence": 3}</textarea>
+                    <textarea id="jsonInput"
+                        placeholder='Enter JSON format...'>{"innovation": 10, "customer": 8, "growth": 7, "engagement": 6, "success": 6, "collaboration": 5, "technology": 5, "strategy": 4, "leadership": 4, "excellence": 3}</textarea>
                     <div class="example">
                         Format: {"word": weight, ...}
                     </div>
@@ -304,7 +310,7 @@ Example: Paste a blog post, article, transcript, or any text you want to visuali
 
                 <div class="controls">
                     <h2>Style Options</h2>
-                    
+
                     <div class="control-group">
                         <label>Color Scheme</label>
                         <select id="colorScheme">
@@ -334,7 +340,8 @@ Example: Paste a blog post, article, transcript, or any text you want to visuali
                     </div>
 
                     <button class="btn-primary" onclick="generateCloud()">🎨 Generate Word Cloud</button>
-                    <button class="btn-secondary" id="downloadBtn" onclick="downloadImage()" disabled>💾 Download PNG</button>
+                    <button class="btn-secondary" id="downloadBtn" onclick="downloadImage()" disabled>💾 Download
+                        PNG</button>
                 </div>
 
                 <div class="stats" id="stats" style="display: none;">
@@ -391,18 +398,18 @@ Example: Paste a blog post, article, transcript, or any text you want to visuali
 
         function switchMode(mode) {
             currentMode = mode;
-            
+
             // Update buttons
             document.querySelectorAll('.mode-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
             event.target.classList.add('active');
-            
+
             // Update sections
             document.querySelectorAll('.input-section').forEach(section => {
                 section.classList.remove('active');
             });
-            
+
             if (mode === 'text') {
                 document.getElementById('textMode').classList.add('active');
             } else {
@@ -416,13 +423,13 @@ Example: Paste a blog post, article, transcript, or any text you want to visuali
                 .replace(/[^\w\s]/g, ' ')
                 .split(/\s+/)
                 .filter(word => word.length > 2 && !STOP_WORDS.has(word));
-            
+
             // Count frequencies
             const frequencies = {};
             words.forEach(word => {
                 frequencies[word] = (frequencies[word] || 0) + 1;
             });
-            
+
             return frequencies;
         }
 
@@ -434,18 +441,18 @@ Example: Paste a blog post, article, transcript, or any text you want to visuali
                 reds: ['#dc2626', '#ef4444', '#f87171', '#fca5a5', '#fecaca'],
                 rainbow: ['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899']
             };
-            
+
             if (scheme === 'custom') {
                 const color = customColor || '#667eea';
                 return [color];
             }
-            
+
             return schemes[scheme] || schemes.purples;
         }
 
         function generateCloud() {
             let wordWeights = {};
-            
+
             if (currentMode === 'text') {
                 const text = document.getElementById('textInput').value.trim();
                 if (!text) {
@@ -459,7 +466,7 @@ Example: Paste a blog post, article, transcript, or any text you want to visuali
                     alert('Please enter JSON data');
                     return;
                 }
-                
+
                 try {
                     wordWeights = JSON.parse(jsonText);
                 } catch (e) {
@@ -467,51 +474,51 @@ Example: Paste a blog post, article, transcript, or any text you want to visuali
                     return;
                 }
             }
-            
+
             // Convert to word cloud format
             const maxWords = parseInt(document.getElementById('maxWords').value);
             const sorted = Object.entries(wordWeights)
                 .sort((a, b) => b[1] - a[1])
                 .slice(0, maxWords);
-            
+
             if (sorted.length === 0) {
                 alert('No words to display');
                 return;
             }
-            
+
             // Update stats
             document.getElementById('wordCount').textContent = Object.keys(wordWeights).length;
             document.getElementById('uniqueCount').textContent = Object.keys(wordWeights).length;
             document.getElementById('displayCount').textContent = sorted.length;
             document.getElementById('stats').style.display = 'grid';
-            
+
             currentWordList = sorted.map(([word, weight]) => [word, weight]);
-            
+
             // Get colors
             const colorScheme = document.getElementById('colorScheme').value;
             const textColor = document.getElementById('textColor').value;
             const bgColor = document.getElementById('bgColor').value;
             const colors = getColorScheme(colorScheme, textColor);
-            
+
             // Hide placeholder, show canvas
             document.querySelector('.placeholder').style.display = 'none';
             document.getElementById('canvas').style.display = 'block';
-            
+
             // Clear canvas
             const canvas = document.getElementById('canvas');
             const ctx = canvas.getContext('2d');
             ctx.fillStyle = bgColor;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
+
             // Generate word cloud
             WordCloud(document.getElementById('canvas'), {
                 list: currentWordList,
                 gridSize: Math.round(16 * canvas.width / 1024),
-                weightFactor: function(size) {
+                weightFactor: function (size) {
                     return Math.pow(size, 1.5) * canvas.width / 400;
                 },
                 fontFamily: 'Impact, Arial Black, sans-serif',
-                color: function() {
+                color: function () {
                     return colors[Math.floor(Math.random() * colors.length)];
                 },
                 rotateRatio: 0.3,
@@ -520,7 +527,7 @@ Example: Paste a blog post, article, transcript, or any text you want to visuali
                 drawOutOfBound: false,
                 shrinkToFit: true
             });
-            
+
             // Enable download button
             document.getElementById('downloadBtn').disabled = false;
         }
@@ -535,10 +542,11 @@ Example: Paste a blog post, article, transcript, or any text you want to visuali
         }
 
         // Auto-update color scheme visibility
-        document.getElementById('colorScheme').addEventListener('change', function() {
+        document.getElementById('colorScheme').addEventListener('change', function () {
             const isCustom = this.value === 'custom';
             document.getElementById('textColor').disabled = !isCustom;
         });
     </script>
 </body>
+
 </html>
