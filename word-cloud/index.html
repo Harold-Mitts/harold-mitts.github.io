@@ -312,36 +312,31 @@ Example: Paste a blog post, article, transcript, or any text you want to visuali
                     <h2>Style Options</h2>
 
                     <div class="control-group">
-                        <label>Color Scheme</label>
-                        <select id="colorScheme">
-                            <option value="blues">Blues</option>
-                            <option value="purples" selected>Purples</option>
-                            <option value="greens">Greens</option>
-                            <option value="reds">Reds</option>
-                            <option value="rainbow">Rainbow</option>
-                            <option value="custom">Custom</option>
+                        <label>Number of Colors</label>
+                        <select id="colorCount">
+                            <option value="1">1 Color</option>
+                            <option value="2">2 Colors</option>
+                            <option value="3">3 Colors</option>
+                            <option value="4">4 Colors</option>
+                            <option value="5" selected>5 Colors</option>
                         </select>
                     </div>
 
-                    <div class="control-group color-group">
-                        <div>
-                            <label>Background</label>
-                            <input type="color" id="bgColor" value="#ffffff">
-                        </div>
-                        <div>
-                            <label>Text Color</label>
-                            <input type="color" id="textColor" value="#667eea">
-                        </div>
+                    <div class="control-group">
+                        <label>Color Palette</label>
+                        <select id="colorPalette">
+                            <!-- Dynamically populated -->
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label>Background Color</label>
+                        <input type="color" id="bgColor" value="#ffffff">
                     </div>
 
                     <div class="control-group">
                         <label>Max Words</label>
                         <input type="number" id="maxWords" value="100" min="10" max="300">
-                    </div>
-
-                    <div class="control-group">
-                        <label>Number of Colors</label>
-                        <input type="number" id="colorCount" value="5" min="1" max="10">
                     </div>
 
                     <button class="btn-primary" onclick="generateCloud()">🎨 Generate Word Cloud</button>
@@ -384,6 +379,44 @@ Example: Paste a blog post, article, transcript, or any text you want to visuali
     <script>
         let currentMode = 'text';
         let currentWordList = [];
+
+        // Curated color palettes organized by count
+        const COLOR_PALETTES = {
+            1: {
+                'Deep Blue': ['#0066cc'],
+                'Royal Purple': ['#667eea'],
+                'Forest Green': ['#059669'],
+                'Crimson Red': ['#dc2626'],
+                'Golden Orange': ['#f59e0b']
+            },
+            2: {
+                'Blue & Orange': ['#0066cc', '#f59e0b'],
+                'Purple & Yellow': ['#667eea', '#fbbf24'],
+                'Green & Pink': ['#10b981', '#ec4899'],
+                'Red & Teal': ['#dc2626', '#14b8a6'],
+                'Navy & Coral': ['#1e40af', '#fb7185']
+            },
+            3: {
+                'Cool Ocean': ['#0066cc', '#667eea', '#14b8a6'],
+                'Warm Sunset': ['#dc2626', '#f59e0b', '#fbbf24'],
+                'Nature Greens': ['#059669', '#10b981', '#34d399'],
+                'Berry Mix': ['#dc2626', '#667eea', '#ec4899'],
+                'Professional': ['#1e40af', '#64748b', '#0891b2']
+            },
+            4: {
+                'Rainbow Lite': ['#3b82f6', '#10b981', '#f59e0b', '#ec4899'],
+                'Corporate': ['#1e40af', '#0891b2', '#64748b', '#6b7280'],
+                'Vibrant': ['#dc2626', '#f59e0b', '#10b981', '#667eea'],
+                'Pastels': ['#93c5fd', '#a7f3d0', '#fcd34d', '#f9a8d4']
+            },
+            5: {
+                'Full Spectrum': ['#dc2626', '#f59e0b', '#10b981', '#0066cc', '#667eea'],
+                'Cool Gradient': ['#0066cc', '#3b82f6', '#667eea', '#8b5cf6', '#a855f7'],
+                'Warm Gradient': ['#dc2626', '#ef4444', '#f59e0b', '#fbbf24', '#fde047'],
+                'Earth Tones': ['#92400e', '#78350f', '#065f46', '#134e4a', '#1e3a8a'],
+                'Professional Suite': ['#1e40af', '#0891b2', '#059669', '#64748b', '#6b7280']
+            }
+        };
 
         // Common English stop words
         const STOP_WORDS = new Set([
@@ -438,21 +471,28 @@ Example: Paste a blog post, article, transcript, or any text you want to visuali
             return frequencies;
         }
 
-        function getColorScheme(scheme, customColor) {
-            const schemes = {
-                blues: ['#0066cc', '#0080ff', '#3399ff', '#66b3ff', '#99ccff'],
-                purples: ['#667eea', '#764ba2', '#9333ea', '#a855f7', '#c084fc'],
-                greens: ['#059669', '#10b981', '#34d399', '#6ee7b7', '#a7f3d0'],
-                reds: ['#dc2626', '#ef4444', '#f87171', '#fca5a5', '#fecaca'],
-                rainbow: ['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899']
-            };
+        function populatePaletteDropdown() {
+            const colorCount = parseInt(document.getElementById('colorCount').value);
+            const paletteDropdown = document.getElementById('colorPalette');
+            const palettes = COLOR_PALETTES[colorCount];
+            
+            // Clear existing options
+            paletteDropdown.innerHTML = '';
+            
+            // Add options for this color count
+            Object.keys(palettes).forEach((paletteName, index) => {
+                const option = document.createElement('option');
+                option.value = paletteName;
+                option.textContent = paletteName;
+                if (index === 0) option.selected = true;
+                paletteDropdown.appendChild(option);
+            });
+        }
 
-            if (scheme === 'custom') {
-                const color = customColor || '#667eea';
-                return [color];
-            }
-
-            return schemes[scheme] || schemes.purples;
+        function getSelectedColors() {
+            const colorCount = parseInt(document.getElementById('colorCount').value);
+            const paletteName = document.getElementById('colorPalette').value;
+            return COLOR_PALETTES[colorCount][paletteName];
         }
 
         function generateCloud() {
@@ -509,12 +549,8 @@ Example: Paste a blog post, article, transcript, or any text you want to visuali
             });
 
             // Get colors
-            const colorScheme = document.getElementById('colorScheme').value;
-            const textColor = document.getElementById('textColor').value;
             const bgColor = document.getElementById('bgColor').value;
-            const colorCount = parseInt(document.getElementById('colorCount').value);
-            const allColors = getColorScheme(colorScheme, textColor);
-            const colors = allColors.slice(0, colorCount);
+            const colors = getSelectedColors();
 
             // Hide placeholder, show canvas
             document.querySelector('.placeholder').style.display = 'none';
@@ -559,10 +595,13 @@ Example: Paste a blog post, article, transcript, or any text you want to visuali
             link.click();
         }
 
-        // Auto-update color scheme visibility
-        document.getElementById('colorScheme').addEventListener('change', function () {
-            const isCustom = this.value === 'custom';
-            document.getElementById('textColor').disabled = !isCustom;
+        // Initialize palette dropdown and add change listener
+        document.addEventListener('DOMContentLoaded', function() {
+            populatePaletteDropdown();
+            
+            document.getElementById('colorCount').addEventListener('change', function() {
+                populatePaletteDropdown();
+            });
         });
     </script>
 </body>
