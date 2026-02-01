@@ -34,4 +34,4 @@
 
 📫 **Connect**: [LinkedIn](https://www.linkedin.com/in/hmitts) - Building Copilot solutions that deliver real outcomes. Let's collaborate.
 
-<sub>All views expressed are my own.</sub>
+<sub>Personal workspace on Microsoft enterprise GitHub. Projects, code, and views are my own – not Microsoft's.</sub>
