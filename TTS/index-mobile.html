@@ -1,9 +1,15 @@
 <!--
-    TTS Multi-Mode Reader - Cross-Platform
+    TTS Multi-Mode Reader - Cross-Platform (Mobile Enhanced)
     Web-based text-to-speech using device speech synthesis.
     Works on Windows, Mac, iOS, Android via Web Speech API.
     Single Voice: One voice with adjustable rate/pitch/volume.
     Conversation: Two alternating voices for dialog.
+    
+    MOBILE IMPROVEMENTS:
+    - Manual voice loading trigger for mobile browsers
+    - Smart fallback voice selection (works with Google TTS)
+    - Better error handling and user feedback
+    - Retry logic for voice loading
 -->
 
 <!DOCTYPE html>
@@ -13,23 +19,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TTS Multi-Mode</title>
-
-    <!-- Mobile Redirect -->
-    <script>
-        // Redirect to mobile version for small screens or mobile devices
-        (function () {
-            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            const isSmallScreen = window.innerWidth <= 768;
-
-            if (isMobile || isSmallScreen) {
-                // Only redirect if not already on mobile page
-                if (!window.location.href.includes('index-mobile.html')) {
-                    window.location.href = 'index-mobile.html';
-                }
-            }
-        })();
-    </script>
-
     <style>
         :root {
             --bg-primary: #0a0a0f;
@@ -39,6 +28,7 @@
             --accent-secondary: #8b5cf6;
             --accent-danger: #ef4444;
             --accent-success: #10b981;
+            --accent-warning: #f59e0b;
             --text-primary: #f0f0f0;
             --text-secondary: #a0a0b0;
             --border-color: rgba(99, 102, 241, 0.3);
@@ -133,6 +123,45 @@
             margin-top: 0.35rem;
             font-style: italic;
             min-height: 1rem;
+        }
+
+        /* Voice Loading Alert */
+        .voice-alert {
+            margin-top: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .voice-alert.show {
+            display: flex;
+        }
+
+        .voice-alert.warning {
+            background: rgba(245, 158, 11, 0.2);
+            border: 1px solid var(--accent-warning);
+            color: var(--accent-warning);
+        }
+
+        .voice-alert.success {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid var(--accent-success);
+            color: var(--accent-success);
+        }
+
+        .voice-alert button {
+            margin-left: auto;
+            padding: 0.35rem 0.75rem;
+            background: var(--accent-warning);
+            border: none;
+            border-radius: 6px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.8rem;
         }
 
         /* Main Content */
@@ -405,6 +434,12 @@
                 <button class="mode-btn" data-mode="conversation">Conversation</button>
             </div>
             <p class="help-text" id="helpText">Enter any text to speak</p>
+
+            <!-- Voice Loading Alert -->
+            <div id="voiceAlert" class="voice-alert">
+                <span id="voiceAlertText">Voices not loaded yet</span>
+                <button id="loadVoicesBtn">Load Voices</button>
+            </div>
         </header>
 
         <main class="main-content">
@@ -493,8 +528,8 @@
     </div>
 
     <script>
-        // TTS Multi-Mode
-        // Combines single voice and dual-voice conversation modes
+        // TTS Multi-Mode - Mobile Enhanced
+        // Improved voice loading for mobile browsers
 
         class TTSMultiMode {
             constructor() {
@@ -507,10 +542,16 @@
                 this.nextQueued = false;
                 this.textChunks = [];
                 this.currentChunkIndex = 0;
+                this.voicesLoaded = false;
+                this.voiceLoadAttempts = 0;
+                this.maxVoiceLoadAttempts = 3;
 
                 // DOM Elements
                 this.textInput = document.getElementById('textInput');
                 this.helpText = document.getElementById('helpText');
+                this.voiceAlert = document.getElementById('voiceAlert');
+                this.voiceAlertText = document.getElementById('voiceAlertText');
+                this.loadVoicesBtn = document.getElementById('loadVoicesBtn');
                 this.voiceSelectSingle = document.getElementById('voiceSelectSingle');
                 this.voiceSelectA = document.getElementById('voiceSelectA');
                 this.voiceSelectB = document.getElementById('voiceSelectB');
@@ -536,13 +577,24 @@
             }
 
             init() {
-                // Load voices
-                this.loadVoices();
+                console.log('🔊 TTS Multi-Mode Initializing...');
+                console.log('📱 User Agent:', navigator.userAgent);
 
-                // Voice loading event
+                // Try to load voices immediately
+                this.attemptLoadVoices();
+
+                // Voice loading event (primary method for most browsers)
                 if (this.synth.onvoiceschanged !== undefined) {
-                    this.synth.onvoiceschanged = () => this.loadVoices();
+                    this.synth.onvoiceschanged = () => {
+                        console.log('🔄 onvoiceschanged event fired');
+                        this.attemptLoadVoices();
+                    };
                 }
+
+                // Retry loading after delays (mobile browsers may need this)
+                setTimeout(() => this.attemptLoadVoices(), 500);
+                setTimeout(() => this.attemptLoadVoices(), 1500);
+                setTimeout(() => this.attemptLoadVoices(), 3000);
 
                 // Event listeners
                 this.setupEventListeners();
@@ -550,21 +602,84 @@
                 this.updateStatus('Ready');
             }
 
-            loadVoices() {
-                this.voices = this.synth.getVoices();
+            attemptLoadVoices() {
+                this.voiceLoadAttempts++;
+                console.log(`🔄 Voice load attempt #${this.voiceLoadAttempts}`);
 
-                if (this.voices.length > 0) {
+                const voices = this.synth.getVoices();
+                console.log(`📋 Found ${voices.length} voices`);
+
+                if (voices.length > 0 && !this.voicesLoaded) {
+                    this.voices = voices;
+                    this.voicesLoaded = true;
+
+                    // Log available voices for debugging
+                    console.log('✅ Voices loaded:', voices.map(v => `${v.name} (${v.lang})`));
+
                     this.populateVoiceLists();
+                    this.showVoiceSuccess();
+                } else if (this.voiceLoadAttempts >= this.maxVoiceLoadAttempts && voices.length === 0) {
+                    // Show manual load button after max attempts
+                    this.showVoiceLoadPrompt();
                 }
             }
 
+            manualLoadVoices() {
+                console.log('👆 Manual voice load triggered');
+
+                // Trigger a dummy utterance to wake up mobile voice engine
+                const utterance = new SpeechSynthesisUtterance('');
+                this.synth.speak(utterance);
+                this.synth.cancel();
+
+                // Try loading again
+                setTimeout(() => {
+                    this.attemptLoadVoices();
+
+                    // If still no voices, show error
+                    if (this.voices.length === 0) {
+                        this.voiceAlertText.textContent = '⚠️ No voices available. Try refreshing the page.';
+                        this.loadVoicesBtn.style.display = 'none';
+                    }
+                }, 300);
+            }
+
+            showVoiceLoadPrompt() {
+                this.voiceAlert.classList.add('show', 'warning');
+                this.voiceAlertText.textContent = '⚠️ Tap "Load Voices" to enable speech';
+            }
+
+            showVoiceSuccess() {
+                this.voiceAlert.classList.remove('warning');
+                this.voiceAlert.classList.add('show', 'success');
+                this.voiceAlertText.textContent = `✅ ${this.voices.length} voices loaded`;
+                this.loadVoicesBtn.style.display = 'none';
+
+                // Hide success message after 3 seconds
+                setTimeout(() => {
+                    this.voiceAlert.classList.remove('show');
+                }, 3000);
+            }
+
             populateVoiceLists() {
-                // Filter en-US voices
-                const enUSVoices = this.voices.filter(voice => voice.lang.startsWith('en-US'));
+                // Filter en-US voices (fallback to en- if no en-US found)
+                let enUSVoices = this.voices.filter(voice => voice.lang.startsWith('en-US'));
+
+                if (enUSVoices.length === 0) {
+                    console.log('⚠️ No en-US voices found, using all en- voices');
+                    enUSVoices = this.voices.filter(voice => voice.lang.startsWith('en-'));
+                }
+
+                if (enUSVoices.length === 0) {
+                    console.log('⚠️ No English voices found, using all voices');
+                    enUSVoices = this.voices;
+                }
+
+                console.log(`📋 Filtered to ${enUSVoices.length} English voices`);
 
                 // Populate single voice selector
                 this.voiceSelectSingle.innerHTML = '';
-                enUSVoices.forEach((voice, index) => {
+                enUSVoices.forEach((voice) => {
                     const option = document.createElement('option');
                     option.textContent = `${voice.name} (${voice.lang})`;
                     option.value = this.voices.indexOf(voice);
@@ -574,7 +689,7 @@
                 // Populate conversation selectors
                 this.voiceSelectA.innerHTML = '';
                 this.voiceSelectB.innerHTML = '';
-                enUSVoices.forEach((voice, index) => {
+                enUSVoices.forEach((voice) => {
                     const optionA = document.createElement('option');
                     optionA.textContent = `${voice.name} (${voice.lang})`;
                     optionA.value = this.voices.indexOf(voice);
@@ -586,37 +701,83 @@
                     this.voiceSelectB.appendChild(optionB);
                 });
 
-                // Auto-select voices
+                // Auto-select voices with smart fallbacks
                 this.autoSelectVoices();
             }
 
             autoSelectVoices() {
-                // Find Andrew for single/Voice A
-                const andrewIndex = this.voices.findIndex(voice => {
-                    const lowerName = voice.name.toLowerCase();
-                    return lowerName.includes('andrew') &&
-                        !lowerName.includes('multilingual') &&
-                        voice.lang.startsWith('en-US');
-                });
+                // Preferred voice patterns (in order of preference)
+                const preferredPatternsA = [
+                    /andrew/i,           // Windows Andrew
+                    /male.*us/i,         // Any US male voice
+                    /\bmale\b/i,         // Any male voice
+                    /google us english/i // Google US English (typically male on Android)
+                ];
 
-                // Find Jenny for Voice B
-                const jennyIndex = this.voices.findIndex(voice => {
-                    const lowerName = voice.name.toLowerCase();
-                    return lowerName.includes('jenny') &&
-                        voice.lang.startsWith('en-US');
-                });
+                const preferredPatternsB = [
+                    /jenny/i,            // Windows Jenny
+                    /female.*us/i,       // Any US female voice
+                    /\bfemale\b/i,       // Any female voice
+                    /samantha/i          // macOS Samantha
+                ];
 
-                if (andrewIndex !== -1) {
-                    this.voiceSelectSingle.value = andrewIndex;
-                    this.voiceSelectA.value = andrewIndex;
+                // Find Voice A
+                let voiceAIndex = -1;
+                for (const pattern of preferredPatternsA) {
+                    voiceAIndex = this.voices.findIndex(voice => {
+                        const match = pattern.test(voice.name);
+                        const notMultilingual = !voice.name.toLowerCase().includes('multilingual');
+                        return match && notMultilingual;
+                    });
+                    if (voiceAIndex !== -1) {
+                        console.log(`✅ Voice A selected: ${this.voices[voiceAIndex].name} (matched ${pattern})`);
+                        break;
+                    }
                 }
 
-                if (jennyIndex !== -1) {
-                    this.voiceSelectB.value = jennyIndex;
+                // Find Voice B
+                let voiceBIndex = -1;
+                for (const pattern of preferredPatternsB) {
+                    voiceBIndex = this.voices.findIndex(voice => {
+                        const match = pattern.test(voice.name);
+                        const notMultilingual = !voice.name.toLowerCase().includes('multilingual');
+                        return match && notMultilingual;
+                    });
+                    if (voiceBIndex !== -1) {
+                        console.log(`✅ Voice B selected: ${this.voices[voiceBIndex].name} (matched ${pattern})`);
+                        break;
+                    }
+                }
+
+                // Fallback: Use first two different voices if specific ones not found
+                if (voiceAIndex === -1 && this.voices.length > 0) {
+                    voiceAIndex = 0;
+                    console.log(`⚠️ Voice A fallback: ${this.voices[voiceAIndex].name}`);
+                }
+
+                if (voiceBIndex === -1 && this.voices.length > 1) {
+                    voiceBIndex = 1;
+                    console.log(`⚠️ Voice B fallback: ${this.voices[voiceBIndex].name}`);
+                } else if (voiceBIndex === -1 && this.voices.length === 1) {
+                    voiceBIndex = 0; // Same voice if only one available
+                    console.log(`⚠️ Voice B fallback (same as A): ${this.voices[voiceBIndex].name}`);
+                }
+
+                // Apply selections
+                if (voiceAIndex !== -1) {
+                    this.voiceSelectSingle.value = voiceAIndex;
+                    this.voiceSelectA.value = voiceAIndex;
+                }
+
+                if (voiceBIndex !== -1) {
+                    this.voiceSelectB.value = voiceBIndex;
                 }
             }
 
             setupEventListeners() {
+                // Manual voice loading button
+                this.loadVoicesBtn.addEventListener('click', () => this.manualLoadVoices());
+
                 // Mode switcher
                 document.querySelectorAll('.mode-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
@@ -686,6 +847,14 @@
 
                 if (!text) {
                     this.updateStatus('Error: Please enter text');
+                    return;
+                }
+
+                // Check if voices are loaded
+                if (!this.voicesLoaded || this.voices.length === 0) {
+                    this.voiceAlert.classList.add('show', 'warning');
+                    this.voiceAlertText.textContent = '⚠️ Please load voices first';
+                    this.manualLoadVoices();
                     return;
                 }
 
@@ -939,8 +1108,8 @@
             }
 
             updateStatus(message) {
-                // Status display removed - this is now a no-op
-                // Kept for backward compatibility with existing code
+                // Status logging (console only)
+                console.log(`📊 Status: ${message}`);
             }
         }
 
