@@ -26,6 +26,8 @@
 
 **[TTS Multi-Mode Reader](https://harold-mitts.github.io/TTS/)** - Web-based text-to-speech with single voice and conversation modes using Web Speech API. Best on desktop browsers. MIT licensed - fork and improve if you'd like to add mobile support.
 
+**[Missile Command](https://harold-mitts.github.io/missile-command/)** - Classic arcade defense game with modern features: 3 difficulty modes, cluster missiles, progressive difficulty scaling, and procedural sound effects. Pure vanilla JavaScript with HTML5 Canvas.
+
 ---
 
 📫 **Connect**: [LinkedIn](https://www.linkedin.com/in/hmitts) - Building Copilot solutions that deliver real outcomes. Let's collaborate.
