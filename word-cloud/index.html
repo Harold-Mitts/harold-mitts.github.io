@@ -492,7 +492,16 @@ Example: Paste a blog post, article, transcript, or any text you want to visuali
             document.getElementById('displayCount').textContent = sorted.length;
             document.getElementById('stats').style.display = 'grid';
 
-            currentWordList = sorted.map(([word, weight]) => [word, weight]);
+            // Normalize weights to 10-100 range for better scaling
+            const maxWeight = Math.max(...sorted.map(([_, w]) => w));
+            const minWeight = Math.min(...sorted.map(([_, w]) => w));
+            const weightRange = maxWeight - minWeight || 1;
+            
+            currentWordList = sorted.map(([word, weight]) => {
+                // Normalize to 10-100 range
+                const normalized = 10 + ((weight - minWeight) / weightRange) * 90;
+                return [word, normalized];
+            });
 
             // Get colors
             const colorScheme = document.getElementById('colorScheme').value;
@@ -510,12 +519,13 @@ Example: Paste a blog post, article, transcript, or any text you want to visuali
             ctx.fillStyle = bgColor;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Generate word cloud
+            // Generate word cloud with much larger text
             WordCloud(document.getElementById('canvas'), {
                 list: currentWordList,
-                gridSize: Math.round(16 * canvas.width / 1024),
+                gridSize: 8,
                 weightFactor: function (size) {
-                    return Math.pow(size, 1.5) * canvas.width / 400;
+                    // Much more aggressive scaling for readable text
+                    return size * 3;
                 },
                 fontFamily: 'Impact, Arial Black, sans-serif',
                 color: function () {
@@ -525,7 +535,8 @@ Example: Paste a blog post, article, transcript, or any text you want to visuali
                 rotationSteps: 2,
                 backgroundColor: bgColor,
                 drawOutOfBound: false,
-                shrinkToFit: true
+                shrinkToFit: true,
+                minSize: 12  // Minimum font size for readability
             });
 
             // Enable download button
