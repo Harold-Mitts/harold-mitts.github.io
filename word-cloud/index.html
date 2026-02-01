@@ -207,18 +207,44 @@
         #canvas {
             max-width: 100%;
             height: auto;
+            display: none;
         }
 
         .placeholder {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             text-align: center;
             color: #999;
             padding: 40px;
+            width: 100%;
+            max-width: 500px;
         }
 
         .placeholder-icon {
-            font-size: 64px;
-            margin-bottom: 20px;
-            opacity: 0.3;
+            font-size: 72px;
+            margin-bottom: 25px;
+            opacity: 0.4;
+            line-height: 1;
+        }
+
+        .placeholder p {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        .placeholder p:first-of-type {
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .placeholder p:last-of-type {
+            font-size: 14px;
+            color: #999;
+            font-weight: 400;
         }
 
         .example {
