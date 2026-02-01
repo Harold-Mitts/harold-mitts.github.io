@@ -339,6 +339,11 @@ Example: Paste a blog post, article, transcript, or any text you want to visuali
                         <input type="number" id="maxWords" value="100" min="10" max="300">
                     </div>
 
+                    <div class="control-group">
+                        <label>Number of Colors</label>
+                        <input type="number" id="colorCount" value="5" min="1" max="10">
+                    </div>
+
                     <button class="btn-primary" onclick="generateCloud()">🎨 Generate Word Cloud</button>
                     <button class="btn-secondary" id="downloadBtn" onclick="downloadImage()" disabled>💾 Download
                         PNG</button>
@@ -496,7 +501,7 @@ Example: Paste a blog post, article, transcript, or any text you want to visuali
             const maxWeight = Math.max(...sorted.map(([_, w]) => w));
             const minWeight = Math.min(...sorted.map(([_, w]) => w));
             const weightRange = maxWeight - minWeight || 1;
-            
+
             currentWordList = sorted.map(([word, weight]) => {
                 // Normalize to 10-100 range
                 const normalized = 10 + ((weight - minWeight) / weightRange) * 90;
@@ -507,7 +512,9 @@ Example: Paste a blog post, article, transcript, or any text you want to visuali
             const colorScheme = document.getElementById('colorScheme').value;
             const textColor = document.getElementById('textColor').value;
             const bgColor = document.getElementById('bgColor').value;
-            const colors = getColorScheme(colorScheme, textColor);
+            const colorCount = parseInt(document.getElementById('colorCount').value);
+            const allColors = getColorScheme(colorScheme, textColor);
+            const colors = allColors.slice(0, colorCount);
 
             // Hide placeholder, show canvas
             document.querySelector('.placeholder').style.display = 'none';
