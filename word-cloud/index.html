@@ -475,10 +475,10 @@ Example: Paste a blog post, article, transcript, or any text you want to visuali
             const colorCount = parseInt(document.getElementById('colorCount').value);
             const paletteDropdown = document.getElementById('colorPalette');
             const palettes = COLOR_PALETTES[colorCount];
-            
+
             // Clear existing options
             paletteDropdown.innerHTML = '';
-            
+
             // Add options for this color count
             Object.keys(palettes).forEach((paletteName, index) => {
                 const option = document.createElement('option');
@@ -596,10 +596,10 @@ Example: Paste a blog post, article, transcript, or any text you want to visuali
         }
 
         // Initialize palette dropdown and add change listener
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             populatePaletteDropdown();
-            
-            document.getElementById('colorCount').addEventListener('change', function() {
+
+            document.getElementById('colorCount').addEventListener('change', function () {
                 populatePaletteDropdown();
             });
         });
