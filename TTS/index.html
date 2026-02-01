@@ -513,9 +513,9 @@
                 <div id="conversationControls" class="hidden">
                     <div class="voice-group">
                         <h3><span class="voice-indicator voice-a-indicator"></span> <span id="speakerALabel">Voice
-                                A</span></h3>
+                                Andrew</span></h3>
                         <input type="text" id="speakerAName" class="speaker-name-input"
-                            placeholder="Speaker name (letters only, max 14)" maxlength="14" value="A">
+                            placeholder="Speaker name (letters only, max 14)" maxlength="14" value="Andrew">
                         <div class="speaker-name-hint">Letters only, max 14 characters</div>
                         <select id="voiceSelectA">
                             <option>Loading voices...</option>
@@ -524,9 +524,9 @@
 
                     <div class="voice-group">
                         <h3><span class="voice-indicator voice-b-indicator"></span> <span id="speakerBLabel">Voice
-                                B</span></h3>
+                                Jenny</span></h3>
                         <input type="text" id="speakerBName" class="speaker-name-input"
-                            placeholder="Speaker name (letters only, max 14)" maxlength="14" value="B">
+                            placeholder="Speaker name (letters only, max 14)" maxlength="14" value="Jenny">
                         <div class="speaker-name-hint">Letters only, max 14 characters</div>
                         <select id="voiceSelectB">
                             <option>Loading voices...</option>
@@ -584,8 +584,8 @@
                 this.voicesLoaded = false;
                 this.voiceLoadAttempts = 0;
                 this.maxVoiceLoadAttempts = 3;
-                this.speakerAName = 'A';
-                this.speakerBName = 'B';
+                this.speakerAName = 'Andrew';
+                this.speakerBName = 'Jenny';
 
                 // DOM Elements
                 this.textInput = document.getElementById('textInput');
@@ -766,8 +766,24 @@
                     /samantha/i          // macOS Samantha
                 ];
 
+                // Helper to extract first name from voice name
+                const extractFirstName = (voiceName) => {
+                    // Common patterns: "Microsoft Andrew Online", "Google US English", "Samantha"
+                    const match = voiceName.match(/^(?:Microsoft\s+)?(\w+)/i);
+                    if (match && match[1]) {
+                        const name = match[1];
+                        // Filter out generic words that aren't names
+                        const genericWords = ['google', 'microsoft', 'apple', 'online', 'premium', 'enhanced'];
+                        if (!genericWords.includes(name.toLowerCase())) {
+                            return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+                        }
+                    }
+                    return null;
+                };
+
                 // Find Voice A
                 let voiceAIndex = -1;
+                let voiceAName = 'Andrew'; // Default fallback
                 for (const pattern of preferredPatternsA) {
                     voiceAIndex = this.voices.findIndex(voice => {
                         const match = pattern.test(voice.name);
@@ -776,12 +792,15 @@
                     });
                     if (voiceAIndex !== -1) {
                         console.log(`✅ Voice A selected: ${this.voices[voiceAIndex].name} (matched ${pattern})`);
+                        const extracted = extractFirstName(this.voices[voiceAIndex].name);
+                        if (extracted) voiceAName = extracted;
                         break;
                     }
                 }
 
                 // Find Voice B
                 let voiceBIndex = -1;
+                let voiceBName = 'Jenny'; // Default fallback
                 for (const pattern of preferredPatternsB) {
                     voiceBIndex = this.voices.findIndex(voice => {
                         const match = pattern.test(voice.name);
@@ -790,6 +809,8 @@
                     });
                     if (voiceBIndex !== -1) {
                         console.log(`✅ Voice B selected: ${this.voices[voiceBIndex].name} (matched ${pattern})`);
+                        const extracted = extractFirstName(this.voices[voiceBIndex].name);
+                        if (extracted) voiceBName = extracted;
                         break;
                     }
                 }
@@ -798,17 +819,23 @@
                 if (voiceAIndex === -1 && this.voices.length > 0) {
                     voiceAIndex = 0;
                     console.log(`⚠️ Voice A fallback: ${this.voices[voiceAIndex].name}`);
+                    const extracted = extractFirstName(this.voices[voiceAIndex].name);
+                    if (extracted) voiceAName = extracted;
                 }
 
                 if (voiceBIndex === -1 && this.voices.length > 1) {
                     voiceBIndex = 1;
                     console.log(`⚠️ Voice B fallback: ${this.voices[voiceBIndex].name}`);
+                    const extracted = extractFirstName(this.voices[voiceBIndex].name);
+                    if (extracted) voiceBName = extracted;
                 } else if (voiceBIndex === -1 && this.voices.length === 1) {
                     voiceBIndex = 0; // Same voice if only one available
                     console.log(`⚠️ Voice B fallback (same as A): ${this.voices[voiceBIndex].name}`);
+                    const extracted = extractFirstName(this.voices[voiceBIndex].name);
+                    if (extracted) voiceBName = extracted;
                 }
 
-                // Apply selections
+                // Apply voice selections
                 if (voiceAIndex !== -1) {
                     this.voiceSelectSingle.value = voiceAIndex;
                     this.voiceSelectA.value = voiceAIndex;
@@ -817,6 +844,16 @@
                 if (voiceBIndex !== -1) {
                     this.voiceSelectB.value = voiceBIndex;
                 }
+
+                // Update speaker names based on detected voices
+                this.speakerAName = voiceAName;
+                this.speakerBName = voiceBName;
+                this.speakerANameInput.value = voiceAName;
+                this.speakerBNameInput.value = voiceBName;
+                this.speakerALabel.textContent = `Voice ${voiceAName}`;
+                this.speakerBLabel.textContent = `Voice ${voiceBName}`;
+
+                console.log(`👤 Speaker names set to: ${voiceAName} / ${voiceBName}`);
             }
 
             setupEventListeners() {
