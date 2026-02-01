@@ -670,11 +670,15 @@
                     this.conversationControls.classList.add('hidden');
                     this.helpText.textContent = 'Enter any text to speak';
                     this.textInput.placeholder = 'Enter text to speak...';
+                    // Set single voice sample text
+                    this.textInput.value = 'Welcome to TTS Multi-Mode! This tool converts text to speech using your device\'s built-in voices. Try adjusting the rate, pitch, and volume controls to customize the experience. You can also switch to conversation mode to have two different voices alternate reading lines of dialogue.';
                 } else {
                     this.singleVoiceControls.classList.add('hidden');
                     this.conversationControls.classList.remove('hidden');
                     this.helpText.textContent = 'Format: "A: dialog text" or "B: dialog text" on separate lines';
                     this.textInput.placeholder = 'A: Hello! How are you today?\nB: I\'m doing great, thanks for asking!\nA: That\'s wonderful to hear.';
+                    // Set conversation sample text
+                    this.textInput.value = 'A: Welcome to conversation mode! This feature uses two different voices.\nB: That\'s right! Each line starting with A or B gets read by a different voice.\nA: Try adjusting the rate, pitch, and volume to customize both voices.\nB: You can also edit this text or write your own dialogue. Just start each line with A or B followed by a colon.';
                 }
 
                 // Stop any current playback
