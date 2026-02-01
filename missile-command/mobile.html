@@ -61,12 +61,14 @@
             width: 100%;
             max-width: 400px;
             padding: 0 10px;
+            position: relative;
+            z-index: 10;
         }
 
         #gameInfo > div {
             text-align: center;
             padding: 5px;
-            background: rgba(0, 255, 0, 0.1);
+            background: rgba(0, 255, 0, 0.2);
             border: 1px solid #00ff00;
             border-radius: 5px;
         }
@@ -77,6 +79,8 @@
             font-size: 12px;
             color: #00aa00;
             padding: 0 10px;
+            position: relative;
+            z-index: 10;
         }
 
         .game-over {
@@ -90,10 +94,12 @@
             border-radius: 10px;
             text-align: center;
             display: none;
-            z-index: 1000;
-            max-width: 90%;
+            pointer-events: none;
         }
 
+        .game-over.show {
+            display: block;
+            pointer-events: auto
         .game-over.show {
             display: block;
         }
@@ -134,6 +140,8 @@
             padding: 10px;
             text-align: center;
             font-size: 10px;
+            position: relative;
+            z-index: 10;
             color: #00aa00;
             opacity: 0.8;
         }
