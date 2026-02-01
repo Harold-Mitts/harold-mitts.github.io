@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -118,6 +119,7 @@
         }
     </style>
 </head>
+
 <body>
     <h1>MISSILE COMMAND</h1>
     <canvas id="gameCanvas" width="800" height="600"></canvas>
@@ -126,14 +128,16 @@
         <div>Cities: <span id="cities">6</span></div>
         <div>Ammo: <span id="ammo">30</span></div>
         <div>Round: <span id="round">1</span></div>
-        <button id="muteBtn" style="background: none; border: 1px solid #00ff00; color: #00ff00; padding: 5px 10px; cursor: pointer; font-family: inherit;">MUTE</button>
+        <button id="muteBtn"
+            style="background: none; border: 1px solid #00ff00; color: #00ff00; padding: 5px 10px; cursor: pointer; font-family: inherit;">MUTE</button>
     </div>
     <div id="instructions">
         Click anywhere to fire counter-missiles and defend your cities from incoming missiles!
     </div>
 
     <footer>
-        <p>Built by <a href="https://harold-mitts.github.io/">Harold Mitts</a> with AI assistance | Inspired by Atari's classic Missile Command</p>
+        <p>Built by <a href="https://harold-mitts.github.io/">Harold Mitts</a> with AI assistance | Inspired by Atari's
+            classic Missile Command</p>
     </footer>
 
     <div id="gameOverScreen" class="game-over">
@@ -168,7 +172,7 @@
             isMuted: false,
             masterGain: null,
 
-            init: function() {
+            init: function () {
                 window.AudioContext = window.AudioContext || window.webkitAudioContext;
                 this.ctx = new AudioContext();
                 this.masterGain = this.ctx.createGain();
@@ -176,7 +180,7 @@
                 this.masterGain.gain.value = 0.3; // Master volume
             },
 
-            toggleMute: function() {
+            toggleMute: function () {
                 this.isMuted = !this.isMuted;
                 if (this.masterGain) {
                     this.masterGain.gain.value = this.isMuted ? 0 : 0.3;
@@ -187,7 +191,7 @@
                 btn.style.borderColor = this.isMuted ? '#ff0000' : '#00ff00';
             },
 
-            play: function(type) {
+            play: function (type) {
                 if (this.isMuted || !this.ctx) return;
                 if (this.ctx.state === 'suspended') {
                     this.ctx.resume();
@@ -221,7 +225,7 @@
                         }
                         const noise = this.ctx.createBufferSource();
                         noise.buffer = buffer;
-                        
+
                         // Filter for "boom" sound
                         const filter = this.ctx.createBiquadFilter();
                         filter.type = 'lowpass';
@@ -230,10 +234,10 @@
 
                         noise.connect(filter);
                         filter.connect(gain);
-                        
+
                         gain.gain.setValueAtTime(1, t);
                         gain.gain.exponentialRampToValueAtTime(0.01, t + 0.5);
-                        
+
                         noise.start(t);
                         noise.stop(t + 0.5);
                         break;
@@ -258,7 +262,7 @@
                         }
                         const cNoise = this.ctx.createBufferSource();
                         cNoise.buffer = cBuffer;
-                        
+
                         const cFilter = this.ctx.createBiquadFilter();
                         cFilter.type = 'lowpass';
                         cFilter.frequency.setValueAtTime(500, t);
@@ -266,10 +270,10 @@
 
                         cNoise.connect(cFilter);
                         cFilter.connect(gain);
-                        
+
                         gain.gain.setValueAtTime(1, t);
                         gain.gain.exponentialRampToValueAtTime(0.01, t + 1.0);
-                        
+
                         cNoise.start(t);
                         cNoise.stop(t + 1.0);
                         break;
@@ -302,7 +306,7 @@
         // Initialize sound system
         try {
             soundManager.init();
-        } catch(e) {
+        } catch (e) {
             console.log('AudioContext not supported');
         }
 
@@ -358,7 +362,7 @@
         const STAR_COUNT = 50; // Number of stars in background
         const STAR_X_MULTIPLIER = 157; // Prime number for pseudo-random star X distribution
         const STAR_Y_MULTIPLIER = 213; // Prime number for pseudo-random star Y distribution
-        
+
         let frameCount = 0;
         let lastSpawnFrame = 0;
 
@@ -403,7 +407,7 @@
                         this.splitY = canvas.height * (0.3 + Math.random() * 0.3);
                     }
                 }
-                
+
                 // Target a random city or random position at bottom
                 if (cities.filter(c => c.alive).length > 0 && Math.random() > 0.3) {
                     const aliveCities = cities.filter(c => c.alive);
@@ -413,24 +417,24 @@
                     this.targetX = Math.random() * canvas.width;
                 }
                 this.targetY = canvas.height;
-                
+
                 this.x = this.startX;
                 this.y = this.startY;
-                
+
                 const dx = this.targetX - this.startX;
                 const dy = this.targetY - this.startY;
                 const distance = Math.sqrt(dx * dx + dy * dy);
-                
+
                 this.vx = (dx / distance) * currentMissileSpeed;
                 this.vy = (dy / distance) * currentMissileSpeed;
-                
+
                 this.trail = [];
             }
 
             split() {
                 const fragments = [];
                 // Create 2 to 4 fragments
-                const count = Math.floor(Math.random() * 3) + 2; 
+                const count = Math.floor(Math.random() * 3) + 2;
                 for (let i = 0; i < count; i++) {
                     // Create new missile at current position, marked as fragment
                     fragments.push(new IncomingMissile(this.x, this.y, true));
@@ -443,7 +447,7 @@
                 if (this.trail.length > 15) {
                     this.trail.shift();
                 }
-                
+
                 this.x += this.vx;
                 this.y += this.vy;
             }
@@ -484,14 +488,14 @@
                 this.y = startY;
                 this.targetX = targetX;
                 this.targetY = targetY;
-                
+
                 const dx = targetX - startX;
                 const dy = targetY - startY;
                 const distance = Math.sqrt(dx * dx + dy * dy);
-                
+
                 this.vx = (dx / distance) * COUNTER_MISSILE_SPEED;
                 this.vy = (dy / distance) * COUNTER_MISSILE_SPEED;
-                
+
                 this.trail = [];
             }
 
@@ -500,7 +504,7 @@
                 if (this.trail.length > 20) {
                     this.trail.shift();
                 }
-                
+
                 this.x += this.vx;
                 this.y += this.vy;
             }
@@ -546,7 +550,7 @@
 
             update() {
                 this.age++;
-                
+
                 // Grow then shrink
                 if (this.age < this.lifetime / 2) {
                     this.radius += EXPLOSION_GROWTH_RATE;
@@ -560,17 +564,17 @@
 
             draw() {
                 const alpha = 1 - (this.age / this.lifetime);
-                
+
                 // Only draw if radius is positive
                 if (this.radius < 0) return;
-                
+
                 // Outer glow
                 const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
                 gradient.addColorStop(0, `rgba(255, 255, 100, ${alpha})`);
                 gradient.addColorStop(0.3, `rgba(255, 150, 0, ${alpha * 0.8})`);
                 gradient.addColorStop(0.7, `rgba(255, 50, 0, ${alpha * 0.5})`);
                 gradient.addColorStop(1, `rgba(255, 0, 0, 0)`);
-                
+
                 ctx.fillStyle = gradient;
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
@@ -625,18 +629,18 @@
         // Start new round
         function startRound() {
             gameState.isRoundOver = false;
-            
+
             const settings = DIFFICULTY_SETTINGS[gameState.difficulty];
-            
+
             // Calculate Speed: Base * Multiplier^(Round-1)
             currentMissileSpeed = BASE_MISSILE_SPEED * Math.pow(settings.speedMultiplier, gameState.round - 1);
-            
+
             // Calculate Count: 5 + (Round - 1) * Increment
             gameState.missilesLeftToSpawn = 5 + (gameState.round - 1) * settings.countIncrement;
-            
+
             // Hide round message
             document.getElementById('roundMessage').classList.remove('show');
-            
+
             updateUI();
         }
 
@@ -644,27 +648,27 @@
         function endRound() {
             gameState.isRoundOver = true;
             soundManager.play('levelUp');
-            
+
             const settings = DIFFICULTY_SETTINGS[gameState.difficulty];
 
             // Bonus: 3 ammo per city
             const bonusAmmo = gameState.citiesAlive * 3;
             gameState.ammo += bonusAmmo;
-            
+
             // Safeguard: Ensure enough ammo for next round
             const nextRoundMissiles = 5 + (gameState.round) * settings.countIncrement;
             if (gameState.ammo < nextRoundMissiles) {
                 gameState.ammo = nextRoundMissiles;
             }
-            
+
             // Show message
             document.getElementById('roundTitle').textContent = `ROUND ${gameState.round} COMPLETE`;
             document.getElementById('roundBonus').textContent = `Bonus Ammo: +${bonusAmmo}`;
             document.getElementById('roundMessage').classList.add('show');
-            
+
             // Next round setup
             gameState.round++;
-            
+
             setTimeout(() => {
                 startRound();
             }, 3000);
@@ -682,7 +686,7 @@
                 // Fire from bottom center
                 const startX = canvas.width / 2;
                 const startY = canvas.height;
-                
+
                 counterMissiles.push(new CounterMissile(startX, startY, targetX, targetY));
                 gameState.ammo--;
                 updateUI();
@@ -692,11 +696,11 @@
         // Check collision between missile and explosion
         function checkMissileExplosionCollision(missile, explosion) {
             if (!explosion.canDestroy()) return false;
-            
+
             const dx = missile.x - explosion.x;
             const dy = missile.y - explosion.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
-            
+
             return distance < explosion.radius;
         }
 
@@ -711,10 +715,10 @@
                     gameState.citiesAlive--;
                     updateUI();
                     soundManager.play('cityBoom');
-                    
+
                     // Create explosion at city
                     explosions.push(new Explosion(city.x, city.y + CITY_HEIGHT / 2));
-                    
+
                     return true;
                 }
             }
@@ -728,7 +732,7 @@
                     // Draw building
                     ctx.fillStyle = '#00ff00';
                     ctx.fillRect(city.x - CITY_WIDTH / 2, city.y, CITY_WIDTH, CITY_HEIGHT);
-                    
+
                     // Draw windows
                     ctx.fillStyle = '#ffff00';
                     for (let i = 0; i < 3; i++) {
@@ -896,4 +900,5 @@
         // gameLoop();
     </script>
 </body>
+
 </html>
