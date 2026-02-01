@@ -2,6 +2,11 @@
 
 ## Word Cloud Generator Enhancements
 
+### Completed ✅
+- [x] Dramatically increase text size for better readability
+- [x] Add dynamic curated color palettes (1-5 colors)
+- [x] Fix placeholder centering and styling
+
 ### High Priority
 - [ ] Add font selection dropdown (Impact, Arial Black, Comic Sans, etc.)
 - [ ] Add shape options (circle, square, heart, star)
