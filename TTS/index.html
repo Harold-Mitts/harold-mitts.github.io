@@ -260,6 +260,36 @@
             color: var(--text-primary);
         }
 
+        /* Speaker Name Inputs */
+        .speaker-name-input {
+            width: 100%;
+            padding: 0.5rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .speaker-name-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+        }
+
+        .speaker-name-input::placeholder {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        .speaker-name-hint {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+            font-style: italic;
+        }
+
         /* Sliders */
         .slider-group {
             margin-bottom: 0.65rem;
@@ -411,7 +441,8 @@
             <!-- Text Input Section -->
             <section class="text-panel">
                 <h2>📝 Text Input</h2>
-                <textarea id="textInput" placeholder="Enter text to speak...">Welcome to TTS Multi-Mode! This tool converts text to speech using your device's built-in voices. Try adjusting the rate, pitch, and volume controls to customize the experience. You can also switch to conversation mode to have two different voices alternate reading lines of dialogue.</textarea>
+                <textarea id="textInput"
+                    placeholder="Enter text to speak...">Welcome to TTS Multi-Mode! This tool converts text to speech using your device's built-in voices. Try adjusting the rate, pitch, and volume controls to customize the experience. You can also switch to conversation mode to have two different voices alternate reading lines of dialogue.</textarea>
             </section>
 
             <!-- Voice Controls Section -->
@@ -446,14 +477,18 @@
                 <!-- Conversation Mode Controls -->
                 <div id="conversationControls" class="hidden">
                     <div class="voice-group">
-                        <h3><span class="voice-indicator voice-a-indicator"></span> Voice A</h3>
+                        <h3><span class="voice-indicator voice-a-indicator"></span> <span id="speakerALabel">Voice A</span></h3>
+                        <input type="text" id="speakerAName" class="speaker-name-input" placeholder="Speaker name (letters only, max 14)" maxlength="14" value="A">
+                        <div class="speaker-name-hint">Letters only, max 14 characters</div>
                         <select id="voiceSelectA">
                             <option>Loading voices...</option>
                         </select>
                     </div>
 
                     <div class="voice-group">
-                        <h3><span class="voice-indicator voice-b-indicator"></span> Voice B</h3>
+                        <h3><span class="voice-indicator voice-b-indicator"></span> <span id="speakerBLabel">Voice B</span></h3>
+                        <input type="text" id="speakerBName" class="speaker-name-input" placeholder="Speaker name (letters only, max 14)" maxlength="14" value="B">
+                        <div class="speaker-name-hint">Letters only, max 14 characters</div>
                         <select id="voiceSelectB">
                             <option>Loading voices...</option>
                         </select>
@@ -507,6 +542,8 @@
                 this.nextQueued = false;
                 this.textChunks = [];
                 this.currentChunkIndex = 0;
+                this.speakerAName = 'A';
+                this.speakerBName = 'B';
 
                 // DOM Elements
                 this.textInput = document.getElementById('textInput');
@@ -531,6 +568,10 @@
                 this.stopBtn = document.getElementById('stopBtn');
                 this.singleVoiceControls = document.getElementById('singleVoiceControls');
                 this.conversationControls = document.getElementById('conversationControls');
+                this.speakerANameInput = document.getElementById('speakerAName');
+                this.speakerBNameInput = document.getElementById('speakerBName');
+                this.speakerALabel = document.getElementById('speakerALabel');
+                this.speakerBLabel = document.getElementById('speakerBLabel');
 
                 this.init();
             }
@@ -655,6 +696,32 @@
                 this.playBtn.addEventListener('click', () => this.play());
                 this.pauseBtn.addEventListener('click', () => this.pause());
                 this.stopBtn.addEventListener('click', () => this.stop());
+
+                // Speaker name validation
+                this.speakerANameInput.addEventListener('input', (e) => this.validateSpeakerName(e, 'A'));
+                this.speakerBNameInput.addEventListener('input', (e) => this.validateSpeakerName(e, 'B'));
+            }
+
+            validateSpeakerName(event, speaker) {
+                // Strip all non-letter characters
+                let value = event.target.value.replace(/[^a-zA-Z]/g, '');
+                
+                // Enforce max 14 characters
+                if (value.length > 14) {
+                    value = value.substring(0, 14);
+                }
+                
+                // Update input value
+                event.target.value = value;
+                
+                // Update stored name and label (default to A or B if empty)
+                if (speaker === 'A') {
+                    this.speakerAName = value || 'A';
+                    this.speakerALabel.textContent = `Voice ${value || 'A'}`;
+                } else {
+                    this.speakerBName = value || 'B';
+                    this.speakerBLabel.textContent = `Voice ${value || 'B'}`;
+                }
             }
 
             switchMode(mode) {
@@ -675,10 +742,10 @@
                 } else {
                     this.singleVoiceControls.classList.add('hidden');
                     this.conversationControls.classList.remove('hidden');
-                    this.helpText.textContent = 'Format: "A: dialog text" or "B: dialog text" on separate lines';
-                    this.textInput.placeholder = 'A: Hello! How are you today?\nB: I\'m doing great, thanks for asking!\nA: That\'s wonderful to hear.';
+                    this.helpText.textContent = `Format: "${this.speakerAName}: dialog text" or "${this.speakerBName}: dialog text" on separate lines`;
+                    this.textInput.placeholder = `${this.speakerAName}: Hello! How are you today?\n${this.speakerBName}: I\'m doing great, thanks for asking!\n${this.speakerAName}: That\'s wonderful to hear.`;
                     // Set conversation sample text
-                    this.textInput.value = 'A: Welcome to conversation mode! This feature uses two different voices.\nB: That\'s right! Each line starting with A or B gets read by a different voice.\nA: Try adjusting the rate, pitch, and volume to customize both voices.\nB: You can also edit this text or write your own dialogue. Just start each line with A or B followed by a colon.';
+                    this.textInput.value = `${this.speakerAName}: Welcome to conversation mode! This feature uses two different voices.\n${this.speakerBName}: That\'s right! Each line starting with ${this.speakerAName} or ${this.speakerBName} gets read by a different voice.\n${this.speakerAName}: Try adjusting the rate, pitch, and volume to customize both voices.\n${this.speakerBName}: You can also edit this text or write your own dialogue. Just start each line with ${this.speakerAName} or ${this.speakerBName} followed by a colon.`;
                 }
 
                 // Stop any current playback
@@ -828,20 +895,33 @@
             parseDialog(text) {
                 const lines = text.split('\n').filter(line => line.trim().length > 0);
                 const dialogParts = [];
+                
+                // Create regex patterns for custom speaker names (case-insensitive)
+                const nameA = this.speakerAName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const nameB = this.speakerBName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const speakerPattern = new RegExp(`^(${nameA}|${nameB}):\\s*(.+)$`, 'i');
+                const bracketPattern = new RegExp(`^\\[(${nameA}|${nameB})\\]\\s*(.+)$`, 'i');
 
                 lines.forEach(line => {
                     const trimmedLine = line.trim();
-                    const colonMatch = trimmedLine.match(/^([AB]):\s*(.+)$/i);
-                    const bracketMatch = trimmedLine.match(/^\[([AB])\]\s*(.+)$/i);
+                    const colonMatch = trimmedLine.match(speakerPattern);
+                    const bracketMatch = trimmedLine.match(bracketPattern);
 
                     if (colonMatch) {
+                        // Determine which speaker based on name match
+                        const speakerName = colonMatch[1];
+                        const isA = speakerName.toLowerCase() === this.speakerAName.toLowerCase();
                         dialogParts.push({
-                            speaker: colonMatch[1].toUpperCase(),
+                            speaker: isA ? 'A' : 'B',
+                            speakerName: speakerName,
                             text: colonMatch[2].trim()
                         });
                     } else if (bracketMatch) {
+                        const speakerName = bracketMatch[1];
+                        const isA = speakerName.toLowerCase() === this.speakerAName.toLowerCase();
                         dialogParts.push({
-                            speaker: bracketMatch[1].toUpperCase(),
+                            speaker: isA ? 'A' : 'B',
+                            speakerName: speakerName,
                             text: bracketMatch[2].trim()
                         });
                     } else if (trimmedLine.length > 0) {
@@ -883,7 +963,8 @@
                 const partIndex = this.currentPartIndex;
 
                 utterance.onstart = () => {
-                    this.updateStatus(`Speaking [${part.speaker}]: "${part.text.substring(0, 40)}${part.text.length > 40 ? '...' : ''}" (${partIndex + 1}/${this.dialogParts.length})`);
+                    const displayName = part.speakerName || part.speaker;
+                    this.updateStatus(`Speaking [${displayName}]: "${part.text.substring(0, 40)}${part.text.length > 40 ? '...' : ''}" (${partIndex + 1}/${this.dialogParts.length})`);
                 };
 
                 utterance.onboundary = (event) => {
