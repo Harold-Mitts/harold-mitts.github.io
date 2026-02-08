@@ -30,6 +30,8 @@
 
 **[Word Cloud Generator](https://harold-mitts.github.io/word-cloud/)** - Interactive word cloud visualizer with two modes: automatic text analysis and manual JSON weighting. Supports custom color schemes and PNG export. Built with wordcloud2.js.
 
+**[Joust-Plus-Dragonrise-Lance-&-Flame](https://harold-mitts.github.io/joust/)** - Modern arcade jousting game with dragon-mounted combat. Built with React, TypeScript, and Tailwind CSS using Lovable.dev rapid prototyping platform.
+
 ---
 
 📫 **Connect**: [LinkedIn](https://www.linkedin.com/in/hmitts) - Building Copilot solutions that deliver real outcomes. Let's collaborate.
