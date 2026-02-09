@@ -32,6 +32,8 @@
 
 **[Joust-Plus-Dragonrise-Lance-&-Flame](https://harold-mitts.github.io/joust/)** - Modern arcade jousting game with dragon-mounted combat. Built with React, TypeScript, and Tailwind CSS using Lovable.dev rapid prototyping platform.
 
+**[Joust: Revival](https://harold-mitts.github.io/joust-revival/)** - Alternative version of the jousting game with enhanced features including pause functionality, game specifications viewer, and player health bars. Built with the same tech stack as Joust-Plus but with different gameplay mechanics. Feedback welcome on which version you prefer!
+
 ---
 
 📫 **Connect**: [LinkedIn](https://www.linkedin.com/in/hmitts) - Building Copilot solutions that deliver real outcomes. Let's collaborate.
