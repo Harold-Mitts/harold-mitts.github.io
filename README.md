@@ -34,6 +34,8 @@
 
 **[Joust: Revival](https://harold-mitts.github.io/joust-revival/)** - Alternative version of the jousting game with enhanced features including pause functionality, game specifications viewer, and player health bars. Built with the same tech stack as Joust-Plus but with different gameplay mechanics. Feedback welcome on which version you prefer!
 
+**[Joust: Revival Mobile](https://harold-mitts.github.io/joust-revival-mobile/)** - Mobile-optimized version with full touch controls and on-screen buttons. Features automatic mobile device detection, responsive layout, multi-touch support, and works seamlessly with both keyboard and touch input on hybrid devices. All Revival features preserved with mobile-first performance optimizations.
+
 ---
 
 📫 **Connect**: [LinkedIn](https://www.linkedin.com/in/hmitts) - Building Copilot solutions that deliver real outcomes. Let's collaborate.
