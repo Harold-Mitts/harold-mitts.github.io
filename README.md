@@ -1,4 +1,4 @@
-- 👋 Hi, I’m **@Harold-Mitts** – Technical Program Manager at Microsoft.
+- 👋 Hi, I'm **@Harold-Mitts** – Technical Program Manager at Microsoft.
 - 🎯 I turn complex technical problems into clear, actionable workflows that help people get things done.
 - 💡 My focus: AI-powered Copilot solutions (Search, Connectors, Extensibility) that actually deliver customer success.
 
